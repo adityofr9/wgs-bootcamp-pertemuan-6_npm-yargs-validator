@@ -2,6 +2,8 @@
 const fs = require('fs');
 //Readline
 const readline = require('readline');
+//NPM Validator
+const validator = require('validator');
 
 const { rejects } = require('assert');
 const { resolve } = require('path');
@@ -39,11 +41,21 @@ const saveContact = (name, email, mobile) => {
     const contacts = JSON.parse(file);
 
     const duplicateName = contacts.find(contact => contact.name === name);
+    const vldEmail = validator.isEmail(contact.email);
+    const vldMobile = validator.isMobilePhone(contact.mobile, 'id-ID');
     
     if (!duplicateName) {
-        contacts.push(contact);
-        fs.writeFileSync('data/contacts.json', JSON.stringify(contacts));
-        console.log('Terima kasih sudah memasukkan data!');
+        if (vldEmail == true) {
+            if (vldMobile == true) {
+                contacts.push(contact);
+                fs.writeFileSync('data/contacts.json', JSON.stringify(contacts));
+                console.log('Terima kasih sudah memasukkan data!');
+            } else {
+                console.log('Data mobile phone yang dimasukkan invalid! Harap check kembali sesuai format mobile phone Indonesia');
+            };
+        } else {
+            console.log('Data email yang dimasukkan invalid!');
+        };
     } else {
         console.log('Data name yang dimasukkan sudah ada!');
     };
